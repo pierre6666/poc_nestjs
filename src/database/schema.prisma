@@ -1,0 +1,28 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl", "linux-arm64-openssl-1.1.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Tweets {
+  id          Int       @default(autoincrement()) @id
+  content     String
+  published   Boolean?  @default(false)
+  createdAt   DateTime  @default(now())
+}
+
+model Tweets2 {
+  id          Int       @default(autoincrement()) @id
+  content     String
+  test     String
+  test2     String
+  published   Boolean?  @default(false)
+  createdAt   DateTime  @default(now())
+}
