@@ -1,10 +1,18 @@
+import { KeycloakConfigModule } from './services/keycloak/keycloak-config.module';
 import { CacheModule, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from './services/prisma/prisma.module';
-import { CacheStore } from '@nestjs/common';
 import { redisStore } from 'cache-manager-redis-store';
+import { APP_GUARD } from '@nestjs/core';
+import {
+  AuthGuard,
+  KeycloakConnectModule,
+  ResourceGuard,
+  RoleGuard,
+} from 'nest-keycloak-connect';
+import { KeycloakConfigService } from './services/keycloak/keycloak-config.service';
 
 @Module({
   imports: [
@@ -22,9 +30,27 @@ import { redisStore } from 'cache-manager-redis-store';
           },
         }),
     }),
+    KeycloakConnectModule.registerAsync({
+      useExisting: KeycloakConfigService,
+      imports: [KeycloakConfigModule],
+    }),
     PrismaModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: ResourceGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RoleGuard,
+    },
+  ],
 })
 export class AppModule {}

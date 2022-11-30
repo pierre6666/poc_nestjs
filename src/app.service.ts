@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Tweets } from '@prisma/client';
+import { Prisma, Tweets } from '@prisma/client';
 import { PrismaService } from './services/prisma/prisma.service';
 
 @Injectable()
@@ -8,6 +8,10 @@ export class AppService {
 
   async getHello(): Promise<Tweets[]> {
     return await this.prisma.tweets.findMany();
+  }
+
+  async createTweet(data: Prisma.TweetsCreateInput): Promise<Tweets> {
+    return this.prisma.tweets.create({ data });
   }
 
   async getContent(idToFind: number): Promise<string> {
